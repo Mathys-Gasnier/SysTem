@@ -3,7 +3,7 @@ use std::thread;
 use evalexpr::*;
 use raylib::prelude::*;
 
-use crate::modules::gitkey::GitKey;
+use crate::modules::{gitkey::GitKey, terminal::{TerminalBuilder, TerminalBuilderError}};
 
 // Command prefixes
 enum Prefix {
@@ -50,11 +50,19 @@ fn execute(input: &str) -> ExecuteResult {
             ExecuteResult::Output(format!("={}", eval(spliced_string).unwrap()))
         },
         Prefix::Command => {
-            // Get the command without the ">", start a new cmd with the command scheduled to run inside it and exit the app
+            // Get the command without the ">" prefix
             let spliced_string = &String::from(input)[1..];
-            std::process::Command::new("cmd")
-                .args([ "/c", "start", "cmd", "/k", spliced_string ])
-                .spawn().unwrap();
+            // Build a terminal to open the cmd and add the start command
+            let mut terminal = TerminalBuilder::new("cmd");
+            terminal.start_command(spliced_string);
+            // Handle error that can occur when starting a terminal
+            if let Some(error) = terminal.start() {
+                match error {
+                    TerminalBuilderError::MissingTerminalFlagForStartCommand(terminal) => {
+                        return ExecuteResult::Output(format!("Cannot find {} start command flag.", terminal));
+                    }
+                }
+            }
             ExecuteResult::Exit
         },
         Prefix::GitKey => {
@@ -67,11 +75,9 @@ fn execute(input: &str) -> ExecuteResult {
             }
         },
         Prefix::NONE => {
-            // If not prefix was found but the command is "wsl" start a wsl cmd
+            // If not prefix was found but the command is "wsl" start a wsl terminal
             if input == "wsl" {
-                std::process::Command::new("cmd")
-                    .args([ "/c", "start", "wsl" ])
-                    .spawn().unwrap();
+                TerminalBuilder::new("wsl").start();
                 return ExecuteResult::Exit;
             }
 
