@@ -1,0 +1,20 @@
+[package]
+name = "sys-stem"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+evalexpr = "11.1.0"
+tray-item = "0.8.0"
+windows-hotkeys = "0.2.1"
+
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[dependencies.raylib]
+version = "4.5.0"
+git = "https://github.com/litten2up/raylib-rs"
+branch = "4.5.0"
+
+[build-dependencies]
+windres = "*"
