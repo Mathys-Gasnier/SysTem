@@ -1,6 +1,9 @@
+use crate::config::get_config;
+
 
 pub enum TerminalBuilderError {
-    MissingTerminalFlagForStartCommand(String) // When the TerminalBuilder.get_start_command_flag cannot find a flag
+    MissingTerminalFlagForStartCommand(String), // When the TerminalBuilder.get_start_command_flag cannot find a flag
+    MissingConfigTerminalNew                    // When the config is missing the terminal.new value
 }
 
 pub struct TerminalBuilder {
@@ -30,8 +33,12 @@ impl TerminalBuilder {
     pub fn start(&self) -> Option<TerminalBuilderError> {
 
         // First create the command that starts the new terminal
-        let mut command = std::process::Command::new("cmd");
-        command.args([ "/c", "start", &self.terminal ]);
+        let config = get_config();
+        if config.terminal.new.len() <= 0 {
+            return Some(TerminalBuilderError::MissingConfigTerminalNew);
+        }
+        let mut command = std::process::Command::new(&config.terminal.new[0]);
+        command.args(config.terminal.new[1..].iter().map(|a| a.replace("%c", &self.terminal)));
 
         // Then handle the start command by also getting the flag if needed
         if let Some(start_command) = &self.start_command {

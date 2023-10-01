@@ -60,6 +60,9 @@ fn execute(input: &str) -> ExecuteResult {
                 match error {
                     TerminalBuilderError::MissingTerminalFlagForStartCommand(terminal) => {
                         return ExecuteResult::Output(format!("Cannot find {} start command flag.", terminal));
+                    },
+                    TerminalBuilderError::MissingConfigTerminalNew => {
+                        return ExecuteResult::Output(String::from("Cannot find terminal.new in the config"));
                     }
                 }
             }

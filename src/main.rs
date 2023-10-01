@@ -1,6 +1,7 @@
 use std::{sync::mpsc, thread};
 use tray_item::{IconSource, TrayItem};
 
+mod config;
 mod app;
 mod hotkey;
 mod modules;
