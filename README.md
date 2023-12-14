@@ -2,6 +2,9 @@
 
 A system command bar that aims to speed up my workflow.
 
+## Archive
+Found app named PowerToys on the Microsoft Store that does the same things and more.
+
 At the moment the package doesn't aim at the "general user" and is more focused on my specific needs.
 
 **! Probably not linux compatible at the moment !**
